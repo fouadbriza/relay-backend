@@ -1,5 +1,7 @@
 use actix_web::{get, web, App, HttpResponse, HttpServer, Responder, middleware::Logger};
-use crate::shared::config::Config;
+use shared::config::Config;
+use shared::database::create_pool;
+use sqlx::database;
 use tracing::info;
 use tracing_subscriber::EnvFilter;
 
@@ -15,15 +17,22 @@ async fn health_check() -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let config = Config::from_env();
+
     tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::from_default_env())
         .init();
+    
+    let db_pool = create_pool(&config.database_url).await.expect("failed to connect to PostgreSQL");
 
+    info!("Database connection pool established");
     info!("Server starting on http://{}:{}", config.host, config.port);
 
-    HttpServer::new(|| {
+    let pool_data = web::Data::new(db_pool);
+    
+    HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
+            .app_data(pool_data.clone())
             .service(health_check)
     })
     .bind((config.host.as_str(), config.port))?
