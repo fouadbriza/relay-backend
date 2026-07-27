@@ -22,9 +22,20 @@ async fn main() -> std::io::Result<()> {
         .with_env_filter(EnvFilter::from_default_env())
         .init();
     
-    let db_pool = create_pool(&config.database_url).await.expect("failed to connect to PostgreSQL");
+    let db_pool = create_pool(&config.database_url)
+    .await
+    .expect("failed to connect to PostgreSQL");
 
     info!("Database connection pool established");
+    
+    info!("Running pending database migrations...");
+    sqlx::migrate!("./migrations")
+        .run(&db_pool)
+        .await
+        .expect("Failed to run database migrations");
+
+    info!("Database migrations complete");
+    
     info!("Server starting on http://{}:{}", config.host, config.port);
 
     let pool_data = web::Data::new(db_pool);
