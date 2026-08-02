@@ -13,4 +13,5 @@ pub struct CallResponse {
     pub room_id: Uuid,
     pub status: String,
     pub created_at: DateTime<Utc>,
+    pub ended_at: Option<DateTime<Utc>>,
 }

@@ -33,4 +33,18 @@ impl CallRepository {
         .fetch_optional(pool)
         .await
     }
+
+    pub async fn end_active_by_room(pool: &PgPool, room_id: Uuid) -> Result<Option<Call>, sqlx::Error> {
+        sqlx::query_as::<_, Call>(
+            r#"
+            UPDATE calls
+            SET status = 'ended', ended_at = NOW()
+            WHERE room_id = $1 AND status != 'ended'
+            RETURNING id, room_id, host_id, status, created_at, ended_at
+            "#,
+        )
+        .bind(room_id)
+        .fetch_optional(pool)
+        .await
+    }
 }
