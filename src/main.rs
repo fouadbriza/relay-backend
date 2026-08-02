@@ -48,8 +48,8 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::default())
             .app_data(pool_data.clone())
             .service(health_check)
-            .configure(room_routes)
             .configure(call_routes)
+            .configure(room_routes)
     })
     .bind((config.host.as_str(), config.port))?
     .run()
