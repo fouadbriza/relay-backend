@@ -12,7 +12,7 @@ pub async fn initiate_call(
 ) -> impl Responder {
     let room_code = path.into_inner();
 
-    let room = match RoomRepository::find_by_code(&pool, &room_code).await {
+    let room = match RoomRepository::find_active_by_code(&pool, &room_code).await {
         Ok(Some(room)) if room.is_active => room,
         Ok(_) => return HttpResponse::BadRequest().body("Room not found or inactive"),
         Err(_) => return HttpResponse::InternalServerError().finish(),
