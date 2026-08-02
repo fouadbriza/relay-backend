@@ -1,12 +1,13 @@
 use actix_web::{get, web, App, HttpResponse, HttpServer, Responder, middleware::Logger};
 use shared::config::Config;
 use shared::database::create_pool;
-use sqlx::database;
 use tracing::info;
 use tracing_subscriber::EnvFilter;
 
 mod features;
 mod shared;
+
+use crate::features::rooms::room_routes;
 
 #[get("/health")]
 async fn health_check() -> impl Responder {
@@ -45,6 +46,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::default())
             .app_data(pool_data.clone())
             .service(health_check)
+            .configure(room_routes)
     })
     .bind((config.host.as_str(), config.port))?
     .run()
