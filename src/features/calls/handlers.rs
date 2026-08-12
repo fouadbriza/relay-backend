@@ -12,13 +12,7 @@ pub async fn initiate_call(
     let room_code = path.into_inner();
 
     match CallService::initiate_call(&pool, &room_code, &req.host_id).await {
-        Ok(call) => HttpResponse::Created().json(CallResponse {
-            id: call.id,
-            room_id: call.room_id,
-            status: call.status,
-            created_at: call.created_at,
-            ended_at: call.ended_at,
-        }),
+        Ok(call) => HttpResponse::Created().json(CallResponse::from(call)),
         Err(CallServiceError::RoomNotFoundOrInactive) => {
             HttpResponse::BadRequest().body("Room not found or inactive")
         }
@@ -36,13 +30,7 @@ pub async fn end_call(
     let room_code = path.into_inner();
 
     match CallService::end_call(&pool, &room_code).await {
-        Ok(call) => HttpResponse::Ok().json(CallResponse {
-            id: call.id,
-            room_id: call.room_id,
-            status: call.status,
-            created_at: call.created_at,
-            ended_at: call.ended_at,
-        }),
+        Ok(call) => HttpResponse::Ok().json(CallResponse::from(call)),
         Err(CallServiceError::RoomNotFoundOrInactive) => {
             HttpResponse::BadRequest().body("Room not found or inactive")
         }
