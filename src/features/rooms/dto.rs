@@ -21,3 +21,31 @@ impl From<super::models::Room> for RoomResponse {
         }
     }
 }
+
+#[derive(Debug, Deserialize)]
+pub struct JoinRoomRequest {
+    pub nickname: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ParticipantResponse {
+    pub id: Uuid,
+    pub room_id: Uuid,
+    pub nickname: String,
+    pub joined_at: DateTime<Utc>,
+    pub last_seen: DateTime<Utc>,
+    pub left_at: Option<DateTime<Utc>>,
+}
+
+impl From<super::models::Participant> for ParticipantResponse {
+    fn from(participant: super::models::Participant) -> Self {
+        Self {
+            id: participant.id,
+            room_id: participant.room_id,
+            nickname: participant.nickname,
+            joined_at: participant.joined_at,
+            last_seen: participant.last_seen,
+            left_at: participant.left_at,
+        }
+    }
+}

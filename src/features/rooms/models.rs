@@ -11,3 +11,13 @@ pub struct Room {
     pub created_at: DateTime<Utc>,
     pub ended_at: Option<DateTime<Utc>>,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct Participant {
+    pub id: Uuid,
+    pub room_id: Uuid,
+    pub nickname: String,
+    pub joined_at: DateTime<Utc>,
+    pub last_seen: DateTime<Utc>,
+    pub left_at: Option<DateTime<Utc>>,
+}
