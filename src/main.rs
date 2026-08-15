@@ -10,6 +10,7 @@ mod shared;
 //routes
 use crate::features::rooms::room_routes;
 use crate::features::calls::call_routes;
+use crate::features::chat::chat_routes;
 
 #[get("/health")]
 async fn health_check() -> impl Responder {
@@ -49,6 +50,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(pool_data.clone())
             .service(health_check)
             .configure(call_routes)
+                .configure(chat_routes)
             .configure(room_routes)
     })
     .bind((config.host.as_str(), config.port))?
